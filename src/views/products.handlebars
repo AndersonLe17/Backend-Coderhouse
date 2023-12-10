@@ -1,0 +1,100 @@
+<div class="container">
+    <div class="mt-3">
+        <h2>Products</h2>
+        <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);"
+            aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Products</li>
+                <li class="breadcrumb-item active" aria-current="page">Paginate</li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="card mb-5">
+        <div class="card-header">
+            Registro de Productos
+        </div>
+        <div class="card-body">
+            <div class="row gy-2 mb-2">
+                <div class="col-auto me-auto d-flex align-items-center">
+                    Mostrar&nbsp;
+                    <select class="form-select" name="limit">
+                        <option value="5" selected>5</option>
+                        <option value="10">10</option>
+                        <option value="15">15</option>
+                        <option value="20">20</option>
+                        <option value="25">25</option>
+                    </select>
+                    &nbsp;Productos
+                </div>
+                <div class="col-auto d-flex align-items-center">
+                    Orden:&nbsp;
+                    <input type="radio" class="btn-check" name="sort" id="radioDesc" value="desc">
+                    <label class="py-0 fw-medium rounded-pill btn btn-outline-success" style="font-size: 0.75rem;" for="radioDesc">Desc</label>
+                    &nbsp;
+                    <input type="radio" class="btn-check" name="sort" id="radioNone1" value="none" checked>
+                    <label class="py-0 fw-medium rounded-pill btn btn-outline-dark" style="font-size: 0.75rem;" for="radioNone1">None</label>
+                    &nbsp;
+                    <input type="radio" class="btn-check" name="sort" id="radioAsc" value="asc">
+                    <label class="py-0 fw-medium rounded-pill btn btn-outline-danger" style="font-size: 0.75rem;" for="radioAsc">Asc</label>
+                </div>
+                <div class="col-auto d-flex align-items-center">
+                    Categoria:&nbsp;
+                    <select class="form-select" name="category">
+                        <option value="all">Todas</option>
+                    </select>
+                </div>
+                <div class="col-auto d-flex align-items-center">
+                    Estado:&nbsp;
+                    <input type="radio" class="btn-check" name="status" id="radioActive" value="true">
+                    <label class="py-0 fw-medium rounded-pill btn btn-outline-success" style="font-size: 0.75rem;" for="radioActive">Active</label>
+                    &nbsp;
+                    <input type="radio" class="btn-check" name="status" id="radioNone2" value="none" checked>
+                    <label class="py-0 fw-medium rounded-pill btn btn-outline-dark" style="font-size: 0.75rem;" for="radioNone2">None</label>
+                    &nbsp;
+                    <input type="radio" class="btn-check" name="status" id="radioInactive" value="false">
+                    <label class="py-0 fw-medium rounded-pill btn btn-outline-danger" style="font-size: 0.75rem;" for="radioInactive">Inactive</label>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="table table-hover w-100" id="dtProducts">
+                    <thead>
+                        <tr>
+                            <th scope="col">Code</th>
+                            <th scope="col">Title</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Stock</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="listProducts"></tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-between flex-wrap">
+                <div class="docs">
+                    Mostrando 1 a 10 de 10 productos
+                </div>
+                <nav>
+                    <ul class="pagination"></ul>
+                </nav>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<div>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast w-100" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- My Scripts -->
+<script src="./static/js/product.js"></script>

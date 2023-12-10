@@ -1,0 +1,196 @@
+import { HttpResponse } from "../../config/HttpResponse";
+import { Cart, CartProduct } from "../dao/domain/cart/Cart";
+import { CartService } from "../services/cart.service";
+import { ProductService } from "../services/product.service";
+import { Request, Response } from "express";
+import UserService from "../services/user.service";
+import TicketService from "../services/tickec.service";
+import { Ticket } from "../dao/domain/ticket/Ticket";
+import { Product } from "../dao/domain/product/Product";
+
+export class CartController {
+    private readonly cartService: CartService;
+    private readonly productService: ProductService;
+    private readonly userService: UserService;
+    private readonly ticketService: TicketService;
+  
+    constructor() {
+      this.cartService = new CartService();
+      this.productService = new ProductService();
+      this.userService = new UserService();
+      this.ticketService = new TicketService();
+    }
+
+    public async createCart(_req: Request, res: Response) {
+      try {
+        const newCart = await this.cartService.create({} as Cart);
+        
+        HttpResponse.Created(res, newCart);
+      } catch (error) {
+        HttpResponse.InternalServerError(res, (error as Error).message);
+      }
+    };
+    
+    public async getCartById(req: Request, res: Response) {
+      try {
+        const cid = req.params.cid;
+        const cart = await this.cartService.findById(cid);
+    
+        if (cart) {
+          HttpResponse.Ok(res, cart);
+        } else {
+          HttpResponse.NotFound(res, "Cart not found");
+        }
+      } catch (error) {
+        HttpResponse.InternalServerError(res, (error as Error).message);
+      }
+    };
+    
+    public async addProductToCart(req: Request, res: Response) {
+      try {
+        const {cid, pid} = req.params;
+        const cart = await this.cartService.findOneById(cid);
+        const product = await this.productService.findById(pid);
+        const newCartItems: Map<string, CartProduct> = new Map();
+        
+        if (cart && product) { // TODO: Validar stock del producto
+          cart.products.push({product: pid, quantity: 1}); 
+  
+          cart.products.forEach(p => newCartItems.get(p.product.toString())
+            ? newCartItems.get(p.product.toString())!.quantity += p.quantity 
+            : newCartItems.set(p.product.toString(), {product: p.product, quantity: p.quantity})
+          );
+          
+          cart.products = Array.from(newCartItems.values());
+          const updatedCart = await this.cartService.update(cid, cart); // TODO: Restar stock del producto
+  
+          HttpResponse.Ok(res, updatedCart);
+        } else {
+          HttpResponse.NotFound(res, cart ? "Product" : "Cart" + " not found");
+        }
+      } catch (error) {
+        HttpResponse.InternalServerError(res, (error as Error).message);
+      }
+    };
+  
+    public async deleteProductToCart(req: Request, res: Response) {
+      try {
+        const {cid, pid} = req.params;
+        const cart = await this.cartService.findOneById(cid);
+        const product = await this.productService.findById(pid);
+  
+        if (cart && product) {
+          const existProductInCart = cart.products.find(p => p.product.toString() === pid);
+  
+          if (existProductInCart) {
+            cart.products = cart.products.filter(p => p.product.toString() !== pid);
+            const updatedCart = await this.cartService.update(cid, cart); // TODO: Sumar stock del producto
+  
+            HttpResponse.Ok(res, updatedCart);
+          } else {
+            HttpResponse.Ok(res, "Product not found in cart");
+          }
+        } else {
+          HttpResponse.NotFound(res, cart ? "Product" : "Cart" + " not found");
+        }
+      } catch (error) {
+        HttpResponse.InternalServerError(res, (error as Error).message);
+      }
+    }
+  
+    public async updateCart(req: Request, res: Response) {
+      try {
+        const {cid} = req.params;
+        const products: CartProduct[] = req.body.products;
+        const cart = await this.cartService.findOneById(cid);
+        const validProducts = await this.productService.validateProducts(products.map(p => p.product));
+        const newCartItems: Map<string, CartProduct> = new Map();
+  
+        if (cart && (validProducts === true)) {
+          cart.products.push(...products);
+          cart.products.forEach(p => newCartItems.get(p.product.toString())
+            ? newCartItems.get(p.product.toString())!.quantity += p.quantity 
+            : newCartItems.set(p.product.toString(), {product: p.product, quantity: p.quantity})
+          );
+          cart.products = Array.from(newCartItems.values());
+          const updatedCart = await this.cartService.update(cid, cart);
+  
+          HttpResponse.Ok(res, updatedCart);
+        } else if (validProducts !== true) {
+          HttpResponse.NotFound(res, "Product " + validProducts + " not found");
+        } else {
+          HttpResponse.NotFound(res, "Cart not found");
+        }
+      } catch (error) {
+        HttpResponse.InternalServerError(res, (error as Error).message);
+      }
+    }
+  
+    public async updateProductToCart(req: Request, res: Response) {
+      try{
+        const {cid, pid} = req.params;
+        const quantity: number = req.body.quantity;
+        const cart = await this.cartService.findOneById(cid);
+        const product = await this.productService.findById(pid);
+  
+        if (cart && product) {
+          const existProductInCart = cart.products.find(p => p.product.toString() === pid);
+          
+          if (existProductInCart) {
+            cart.products = cart.products.map(p => p.product.toString() === pid ? {product: pid, quantity: quantity} : p);
+            const updatedCart = await this.cartService.update(cid, cart); // TODO: Actualizar stock del producto
+  
+            HttpResponse.Ok(res, updatedCart);
+          } else {
+            HttpResponse.Ok(res, "Product not found in cart");
+          }
+        } else {
+          HttpResponse.NotFound(res, cart ? "Product" : "Cart" + " not found");
+        }
+      } catch (error) {
+        HttpResponse.InternalServerError(res, (error as Error).message);
+      }
+    }
+  
+    public async deleteCart(req: Request, res: Response) {
+      try {
+        const {cid} = req.params;
+        const cart = await this.cartService.findOneById(cid);
+  
+        if (cart) {
+          cart.products = [];
+          const updatedCart = await this.cartService.update(cid, cart); // TODO: Actualizar stock de los productos
+  
+          HttpResponse.Ok(res, updatedCart);
+        } else {
+          HttpResponse.NotFound(res, "Cart not found");
+        }
+      } catch (error) {
+        HttpResponse.InternalServerError(res, (error as Error).message);
+      }
+    }
+
+    public async purchaseCart(req: Request, res: Response) {
+      try {
+        const { cid } = req.params;
+        const { uid } = req.body;
+        const cart = await this.cartService.findById(cid);
+        const user = await this.userService.findOneById(uid);
+        if (!cart || !user) return HttpResponse.NotFound(res, cart ? "User" : "Cart" + " not found");
+
+        const productsFilter = cart.products.filter((p) => p.quantity <= (p.product as any).stock);
+        const amount = productsFilter.reduce((acc, p) => acc + (p.quantity * (p.product as any).price), 0);
+
+        const updatedStock = await this.productService.updateStock(productsFilter.map((p) => ({ _id: (p.product as any)._id, quantity: p.quantity })));
+
+        if (updatedStock) {
+          const ticket = await this.ticketService.create({amount: Number(amount.toFixed(2)), purchaser: user.email } as Ticket);
+          const cartFilter = cart.products.filter((p) => p.quantity > (p.product as any).stock).map(p => ({product: (p.product as any)._id, quantity: p.quantity}));
+
+          const updatedCart = await this.cartService.update(cid, { products: cartFilter } as Cart);
+        }
+      } catch (error) {
+        HttpResponse.InternalServerError(res, (error as Error).message);
+      }
+    }
+}

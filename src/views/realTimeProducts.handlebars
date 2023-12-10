@@ -1,0 +1,121 @@
+<div class="container">
+    <div class="mt-3">
+        <h2>Products</h2>
+        <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);"
+            aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Products</li>
+                <li class="breadcrumb-item active" aria-current="page">Socket</li>
+            </ol>
+        </nav>
+    </div>
+
+    <button class="btn btn-success mb-4" data-bs-toggle="modal" data-bs-target="#modalProducts">Agregar</button>
+
+    <div class="card mb-5">
+        <div class="card-header">
+            Register of Products
+        </div>
+        <div class="card-body">
+            <table class="table table-hover w-100" id="dtProducts">
+                <thead>
+                    <tr>
+                        {{!-- <th scope="col">Id</th> --}}
+                        <th scope="col">Code</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Stock</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="listProducts">
+                    {{#products}}
+                    <tr>
+                        <td>{{code}}</td>
+                        <td>{{this.title}}</td>
+                        <td><div style="width: 17.5rem;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;">{{description}}</div></td>
+                        <td>${{price}}</td>
+                        <td>{{stock}}</td>
+                        <td>{{category}}</td>
+                        <td>
+                            <span class="badge rounded-pill text-bg-{{#if status}}success{{else}}danger{{/if}}">{{#if status}}Active{{else}}Inactive{{/if}}</span>
+                        </td>
+                        <td>
+                            <i class="fa-regular fa-trash btn btn-outline-danger rounded-pill" data-id="{{_id}}"></i>
+                        </td>
+                    </tr>
+                    {{/products}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modalProducts" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formAddProduct">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="title" name="title" placeholder="Product name">
+                        <label for="title">Title</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <textarea class="form-control" id="description" name="description" placeholder="Description" style="height: 100px;"></textarea>
+                        <label for="description">Description</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="number" class="form-control" id="price" name="price" placeholder="Price S/." min="0.01" step="0.01">
+                        <label for="price">Price S/.</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="code" name="code" placeholder="Code (AAA-000)">
+                        <label for="code">Code (AAA-000)</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="number" class="form-control" id="stock" name="stock" placeholder="Stock" min="0">
+                        <label for="stock">Stock</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="category" name="category" placeholder="Category">
+                        <label for="category">Category</label>
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-success" id="btnAdd">Add</button>
+                        <a class="btn btn-danger" data-bs-dismiss="modal" aria-label="Close">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast w-100" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--  SweetAlert2 -->
+<!-- <link href="https://cdn.jsdelivr.net/npm/sweetalert2@/dist/sweetalert2.min.css" rel="stylesheet"> -->
+<link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-bootstrap-4@5.0.15/bootstrap-4.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.28/dist/sweetalert2.all.min.js"></script>
+<!--  DataTables -->
+<link href="https://cdn.datatables.net/v/bs5/dt-1.13.6/datatables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-1.13.6/datatables.min.js"></script>
+<!--  Socket IO -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+<!--  My Scripts -->
+<script src="./static/js/realTimeProducts.js"></script>

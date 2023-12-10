@@ -1,0 +1,43 @@
+<nav class="navbar navbar-expand-lg" data-bs-theme="dark" style="background: #1f2023;">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <img src="/static/img/coder-icon.png" alt="coderhouse" width="150">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="/chat">Chat</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Products
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/home">Products Http</a></li>
+                        <li><a class="dropdown-item" href="/realtimeproducts">Products Socket</a></li>
+                        <li><a class="dropdown-item" href="/products">Products Paginate</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="navbar-nav" id="navUser">
+                <li class="nav-item">
+                    <a href="/carts" class="nav-link">Cart <i class="fa-regular fa-bag-shopping"></i></a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fa-solid fa-user"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/profile">Perfil</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/logout" id="linkLogout">Cerrar Sesión</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>

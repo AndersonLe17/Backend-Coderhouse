@@ -1,0 +1,19 @@
+#boxMessages {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+#boxMessages::-webkit-scrollbar {
+    display: none;
+}
+
+.card-login {
+    width: 30rem;
+}
+
+@media (max-width: 768px) {
+    .card-login {
+        border: none;
+    }
+}
