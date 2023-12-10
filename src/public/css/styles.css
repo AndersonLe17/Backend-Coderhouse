@@ -12,6 +12,10 @@
     width: 30rem;
 }
 
+#detailTable{
+    width: 25rem;
+}
+
 @media (max-width: 768px) {
     .card-login {
         border: none;

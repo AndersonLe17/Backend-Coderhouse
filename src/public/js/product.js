@@ -71,7 +71,7 @@ document.getElementById('listProducts').addEventListener('click', async (e) => {
             method: 'POST',
         }).then((res) => res.json());
         if (response.code === 201) {
-            userData.cart = data.payload._id;
+            userData.cart = response.payload._id;
             const res = await fetch(`http://localhost:8080/api/users/${userData.user}/cart/${userData.cart}`, {
                 method: 'PUT',
             });

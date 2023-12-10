@@ -39,7 +39,14 @@ export class ProductService extends ServiceConfig<Product> {
     const productsIds = products.map((p: any) => p._id);
     const productsQuantities = products.map((p: any) => p.quantity);
 
-    const productsUpdate = await this.entityModel.updateMany({_id: {$in: productsIds}}, {stock: {$subtract: ["$stock", productsQuantities]}});
+    const productsUpdate = await this.entityModel.bulkWrite(
+      productsIds.map((id: string, index: number) => ({
+        updateOne: {
+          filter: { _id: id },
+          update: { $inc: { stock: -productsQuantities[index] } },
+        },
+      }))
+    );
 
     return productsUpdate.modifiedCount === products.length;
   }

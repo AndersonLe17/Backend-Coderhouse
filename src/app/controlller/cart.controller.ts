@@ -6,7 +6,8 @@ import { Request, Response } from "express";
 import UserService from "../services/user.service";
 import TicketService from "../services/tickec.service";
 import { Ticket } from "../dao/domain/ticket/Ticket";
-import { Product } from "../dao/domain/product/Product";
+import { transporter } from "../../utils/mail/nodemailer";
+import { mailTicket } from "../../utils/mail/purchase.mail";
 
 export class CartController {
     private readonly cartService: CartService;
@@ -186,8 +187,12 @@ export class CartController {
         if (updatedStock) {
           const ticket = await this.ticketService.create({amount: Number(amount.toFixed(2)), purchaser: user.email } as Ticket);
           const cartFilter = cart.products.filter((p) => p.quantity > (p.product as any).stock).map(p => ({product: (p.product as any)._id, quantity: p.quantity}));
-
           const updatedCart = await this.cartService.update(cid, { products: cartFilter } as Cart);
+          
+          const response = (cartFilter.length > 0)? updatedCart : ticket;
+
+          await transporter.sendMail(mailTicket(ticket));
+          HttpResponse.Ok(res, response);
         }
       } catch (error) {
         HttpResponse.InternalServerError(res, (error as Error).message);
