@@ -23,6 +23,14 @@ export class HttpResponse {
     });
   }
 
+  static Error(res: Response, error: Error): Response {
+    return res.status(HttpStatus.OK).json({
+      status: "Error",
+      message: error.message,
+      error: error.name
+    });
+  }
+
   static Created(res: Response, data?: any): Response {
     return res.status(HttpStatus.CREATED).json({
       code: HttpStatus.CREATED,

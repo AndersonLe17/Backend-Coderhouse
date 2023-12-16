@@ -9,6 +9,8 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
 import { PassportConfig } from "./config/PassportConfing";
+import { logger } from "./utils/logger/winstong";
+import { errorMiddleware } from "./app/middlewares/error.middleware";
 
 class App extends ServerConfig {
   public app: express.Application = express();
@@ -28,7 +30,6 @@ class App extends ServerConfig {
     this.app.engine('handlebars', engine());
     this.app.set('view engine', 'handlebars');
     this.app.set('views', this.dirname + '/views');
-    console.log(this.dirname + '/views');
   }
 
   private middlewares(): void {
@@ -56,11 +57,12 @@ class App extends ServerConfig {
       const route = new Route();
       this.app.use(route.path, route.router);
     });
+    this.app.use(errorMiddleware);
   }
 
   private listen(): void {
     const httpServer = this.app.listen(this.port, () => {
-      console.log(`Server running on port ${this.port}`);
+      logger.info(`Server running on port ${this.port}`);
     });
     this.app.set('io', new Server(httpServer));
   }

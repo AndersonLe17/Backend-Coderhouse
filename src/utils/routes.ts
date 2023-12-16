@@ -1,5 +1,6 @@
 import { CartRouter } from "../app/router/cart.routes";
 import { MessageRouter } from "../app/router/message.routes";
+import { MockRouter } from "../app/router/mock.routes";
 import { ProductRouter } from "../app/router/product.routes";
 import { SessionRouter } from "../app/router/session.routes";
 import { UserRouter } from "../app/router/user.routes";
@@ -11,6 +12,7 @@ export default class Routes {
         UserRouter,
         CartRouter,
         MessageRouter,
+        MockRouter,
         SessionRouter,
         ViewRouter
     ]
