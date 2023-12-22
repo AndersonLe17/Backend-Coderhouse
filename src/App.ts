@@ -8,9 +8,10 @@ import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
-import { PassportConfig } from "./config/PassportConfing";
+import { PassportConfig } from "./config/PassportConfig";
 import { logger } from "./utils/logger/winstong";
 import { errorMiddleware } from "./app/middlewares/error.middleware";
+require("express-async-errors");
 
 class App extends ServerConfig {
   public app: express.Application = express();

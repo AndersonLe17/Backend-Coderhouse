@@ -1,6 +1,7 @@
 import passport from "passport";
 import { RouterConfig } from "../../config/RouterConfig";
 import { UserController } from "../controlller/user.controller";
+import { authenticationLogin } from "../middlewares/authentication.middleware";
 
 export class UserRouter extends RouterConfig<UserController> {
 
@@ -19,9 +20,8 @@ export class UserRouter extends RouterConfig<UserController> {
     // DELETE ROUTES
     
     // MIDDLEWARE AUTH
-    this.router.use(passport.authenticate('current', {session: false, failureRedirect: '/logout'}));
-    this.router.get("/profile",this.controller.getUserByEmailToken.bind(this.controller));
-    this.router.get("/cart", this.controller.getUserByToken.bind(this.controller));
-    this.router.put("/:uid/cart/:cid", this.controller.updateUserAddCart.bind(this.controller));
+    this.router.get("/profile", authenticationLogin, this.controller.getUserByEmailToken.bind(this.controller));
+    this.router.get("/cart", authenticationLogin, this.controller.getUserByToken.bind(this.controller));
+    this.router.put("/:uid/cart/:cid", authenticationLogin, this.controller.updateUserAddCart.bind(this.controller));
   }
 }

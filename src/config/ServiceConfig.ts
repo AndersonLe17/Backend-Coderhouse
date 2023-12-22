@@ -32,7 +32,7 @@ export default class ServiceConfig<T> {
   }
 
   public async delete(id: string): Promise<number> {
-    const deleteEntity = await this.entityModel.deleteOne({ _id: id });
-    return deleteEntity.deletedCount || 0;
+      const deleteEntity = await this.entityModel.deleteOne({ _id: id });
+      return deleteEntity.deletedCount || 0;
   }
 }

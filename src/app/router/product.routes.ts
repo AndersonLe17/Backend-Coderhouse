@@ -12,14 +12,12 @@ export class ProductRouter extends RouterConfig<ProductController> {
     // GET ROUTES
     this.router.get('/', this.controller.getProductsPaginate.bind(this.controller));
     this.router.get('/:pid', this.controller.getProductById.bind(this.controller));
-    this.router.get('/categories/all',this.controller.getCategories.bind(this.controller));
+    this.router.get('/categories/all', this.controller.getCategories.bind(this.controller));
     // POST ROUTES
     this.router.post('/', authorizationAdmin, this.controller.createProduct.bind(this.controller));
     // PUT ROUTES
     this.router.put('/:pid', authorizationAdmin, this.controller.updateProduct.bind(this.controller));
     // DELETE ROUTES
     this.router.delete('/:pid', authorizationAdmin, this.controller.deleteProduct.bind(this.controller));
-
-    
   }
 }

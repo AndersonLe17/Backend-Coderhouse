@@ -9,7 +9,7 @@ export class ViewController {
     this.productService = new ProductService();
   }
 
-  public async viewIndex(_req: Request, res: Response) {
+  public async viewIndex(_req: Request, res: Response) {    
     res.render('index');
   };
 
@@ -25,7 +25,6 @@ export class ViewController {
   }
 
   public async viewRealTimeProducts(_req: Request, res: Response) {
-    console.log("Cliente conectado");
     const products = await this.productService.findAll();
     res.render('realTimeProducts', {title: 'Products', products});
   }

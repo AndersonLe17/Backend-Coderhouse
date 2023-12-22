@@ -17,6 +17,7 @@ async function loadUser() {
 async function loadCart() {
     const res = await fetch(`http://localhost:8080/api/carts/${userData.cart}`);
     const data = await res.json();
+    tableCart.children[1].innerHTML = '';
     data.payload.products.forEach((prod) => {
         tableCart.children[1].innerHTML += `
             <tr>
@@ -32,6 +33,7 @@ async function loadCart() {
     });
 
     const amount = data.payload.products.reduce((acc, prod) => acc + prod.product.price * prod.quantity, 0).toFixed(2);
+    tableDetail.children[0].innerHTML = '';
     tableDetail.children[0].innerHTML += `
         <tr>
             <th>SubTotal</th>
@@ -46,6 +48,22 @@ async function loadCart() {
             <td class="fw-bold">$${amount}</td>
         </tr>
     `;
+}
+
+document.getElementById('listProducts').addEventListener('click', async(e) => {
+    if (e.target.dataset.id) {
+        deleteProduct(e.target.dataset.id);
+    }
+});
+
+async function deleteProduct(id) {
+    const response = await fetch(`http://localhost:8080/api/carts/${userData.cart}/products/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then((res) => res.json());
+    if (!response.error) loadCart();
 }
 
 document.querySelector('#btnPurchase').addEventListener('click', async () => {
