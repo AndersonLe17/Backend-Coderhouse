@@ -9,7 +9,7 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import passport from "passport";
 import { PassportConfig } from "./config/PassportConfig";
-import { logger } from "./utils/logger/winstong";
+import { logger } from "./utils/logger/winston";
 import { errorMiddleware } from "./app/middlewares/error.middleware";
 require("express-async-errors");
 

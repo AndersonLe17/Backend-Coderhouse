@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { ProductService } from "../services/product.service";
 import { JsonWebToken } from "../../utils/jwt/JsonWebToken";
+import { logger } from "../../utils/logger/winston";
 
 export class ViewController {
   private readonly productService: ProductService;
@@ -53,5 +54,15 @@ export class ViewController {
     req.logout((_error) => {
       res.clearCookie('tokenJWT').redirect('/login');
     });
+  }
+
+  public async testLogger(_req: Request, res: Response) {
+    logger.debug('Debugging test');
+    logger.http('Http test');
+    logger.info('Info test');
+    logger.warning('Warning test');
+    logger.error('Error test');
+    logger.fatal('Fatal test');
+    res.send('Logger test');
   }
 }

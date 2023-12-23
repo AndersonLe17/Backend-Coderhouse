@@ -20,6 +20,7 @@ export class ViewRouter extends RouterConfig<ViewController> {
     this.router.get('/chat', authenticationLogin, this.controller.viewChat.bind(this.controller));
     this.router.get('/products', authenticationLogin, this.controller.viewPaginateProducts.bind(this.controller));
     this.router.get('/carts', authenticationLogin, this.controller.viewCartById.bind(this.controller));
+    this.router.get('/loggerTest', this.controller.testLogger.bind(this.controller));
   }
 
 }

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { logger } from "../../../utils/logger/winstong";
+import { logger } from "../../../utils/logger/winston";
 
 export default class MongoConnect {
   static connectDatabase(url: string): void {
