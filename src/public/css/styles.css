@@ -8,7 +8,7 @@
     display: none;
 }
 
-.card-login {
+.card-login, .card-forgot {
     width: 30rem;
 }
 
@@ -17,7 +17,7 @@
 }
 
 @media (max-width: 768px) {
-    .card-login {
+    .card-login, .card-forgot {
         border: none;
     }
 }

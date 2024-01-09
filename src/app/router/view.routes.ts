@@ -1,6 +1,7 @@
 import { RouterConfig } from "../../config/RouterConfig";
 import { ViewController } from "../controlller/view.controller";
 import { authenticationLogin } from "../middlewares/authentication.middleware";
+import { expirationReset } from "../middlewares/authorization.middleware";
 
 export class ViewRouter extends RouterConfig<ViewController> {
   constructor() {
@@ -12,6 +13,8 @@ export class ViewRouter extends RouterConfig<ViewController> {
     // GET ROUTES
     this.router.get('/login', this.controller.viewLogin.bind(this.controller));
     this.router.get('/logout', this.controller.viewLogout.bind(this.controller));
+    this.router.get('/forgotpassword', this.controller.viewForgotPassword.bind(this.controller));
+    this.router.get('/resetpassword/:token', expirationReset, this.controller.viewResetPassword.bind(this.controller));
     // MIDDLEWARE AUTHENTICATION
     this.router.get('/', authenticationLogin, this.controller.viewIndex.bind(this.controller));
     this.router.get('/profile', authenticationLogin, this.controller.viewProfile.bind(this.controller));

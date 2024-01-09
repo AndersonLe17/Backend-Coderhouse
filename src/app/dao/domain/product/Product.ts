@@ -7,9 +7,10 @@ export class Product {
     public code: string;
     public stock: number;
     public category: string;
+    public owner?: string;
     public status: boolean;
 
-    constructor(title: string, description: string, price: number, thumbnail: string, code: string, stock: number, category: string, status: boolean) {
+    constructor(title: string, description: string, price: number, thumbnail: string, code: string, stock: number, category: string, owner: string, status: boolean) {
         this.title = title;
         this.description = description;
         this.price = price;
@@ -17,6 +18,7 @@ export class Product {
         this.code = code;
         this.stock = stock;
         this.category = category;
+        this.owner = owner;
         this.status = status;
     }
 }

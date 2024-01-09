@@ -22,7 +22,6 @@ export class UserController {
       HttpResponse.Ok(res, { firstName, lastName, age, email, _id });
     } else {
       throw new UserError("User not found");
-      // HttpResponse.NotFound(res, "User not found");
     }
   }
 
@@ -35,7 +34,6 @@ export class UserController {
       HttpResponse.Ok(res, { _id, cart });
     } else {
       throw new UserError("User not found");
-      // HttpResponse.NotFound(res, "User not found");
     }
   }
 
@@ -47,7 +45,20 @@ export class UserController {
       HttpResponse.Ok(res, {cart: user.cart});
     } else {
       throw new ProductError("Product not found");
-      // HttpResponse.NotFound(res, "Product not found");
+    }
+  }
+
+  public async updateUserPremium(req: Request, res: Response) {
+    const {uid} = req.params;
+    const user = await this.userService.findOne({ _id: uid });
+    if (user?.role === 'admin') throw new UserError("Unauthorized");
+    
+    const userUpdate = await this.userService.update(uid, {role: user!.role === 'user'? 'premium':'user'} as User);
+
+    if (userUpdate) {
+      HttpResponse.Ok(res, {role: userUpdate.role});
+    } else {
+      throw new UserError("User not found");
     }
   }
 }

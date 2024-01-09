@@ -8,6 +8,7 @@ export const UserModel = mongoose.model<User>("Users", new mongoose.Schema<User>
   age: {type: Number, required: true},
   password: {type: String, required: true},
   cart: {type: Schema.Types.ObjectId, ref: 'Carts'},
-  role: {type: String, enum: ['admin', 'user'], default: 'user', required: true},
-  fromGithub: {type: Boolean, default: false, required: true}
+  role: {type: String, enum: ['admin', 'user', 'premium'], default: 'user', required: true},
+  fromGithub: {type: Boolean, default: false, required: true},
+  isforgottenPassword: {type: Boolean, default: false, required: true}
 }));

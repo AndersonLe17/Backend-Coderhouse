@@ -88,7 +88,8 @@ async function addCartProduct(pid) {
         method: 'POST',
     });
     const data = await res.json();
-    if (data.code === 200) showToast("success", "Product added to cart");
+    if (data.error) showToast("danger", data.message); 
+    else if (data.code === 200) showToast("success", "Product added to cart");
 }
 
 function loadPagination({totalPages, page, totalDocs, hasPrevPage, hasNextPage}) {
@@ -168,6 +169,8 @@ inputStatus[0].parentElement.addEventListener('change', (e) => {
 });
 
 const showToast = (color, mensaje) => {
+    document.querySelector(".toast").classList.remove(`text-bg-danger`);
+    document.querySelector(".toast").classList.remove(`text-bg-success`);
     document.querySelector(".toast").classList.add(`text-bg-${color}`);
     document.querySelector(".toast-body").innerText = mensaje;
     toast.show();

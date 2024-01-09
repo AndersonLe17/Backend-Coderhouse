@@ -2,12 +2,15 @@ import { Request, Response } from "express";
 import { ProductService } from "../services/product.service";
 import { JsonWebToken } from "../../utils/jwt/JsonWebToken";
 import { logger } from "../../utils/logger/winston";
+import UserService from "../services/user.service";
 
 export class ViewController {
   private readonly productService: ProductService;
+  private readonly userService: UserService;
 
   constructor() {
     this.productService = new ProductService();
+    this.userService = new UserService();
   }
 
   public async viewIndex(_req: Request, res: Response) {    
@@ -54,6 +57,18 @@ export class ViewController {
     req.logout((_error) => {
       res.clearCookie('tokenJWT').redirect('/login');
     });
+  }
+
+  public async viewForgotPassword(_req: Request, res: Response) {
+    res.render('forgotPassword', {title: 'Forgot Password', isLogout: true});
+  }
+
+  public async viewResetPassword(req: Request, res: Response) {
+    const { token } = req.params;
+    const { sub } = req.user as JsonWebToken;
+    const user = await this.userService.findOne({ _id: sub });
+    if (user?.isforgottenPassword === false) return res.redirect('/login');
+    res.status(200).cookie('tokenJWT', token, {httpOnly: true}).render('resetPassword', {title: 'Reset Password', isLogout: true});
   }
 
   public async testLogger(_req: Request, res: Response) {

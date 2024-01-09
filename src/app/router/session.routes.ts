@@ -18,6 +18,8 @@ export class SessionRouter extends RouterConfig<SessionController> {
     //JWT passport
     this.router.get('/current',passport.authenticate('current', {session: false}), async (req, res) => {res.status(200).send(req.user)});
     // POST ROUTES
+    this.router.post('/forgotpassword', this.controller.forgotPassword.bind(this.controller));
+    this.router.post('/resetPassword', passport.authenticate('current', {session: false}), this.controller.resetPassword.bind(this.controller));
     // Local passport
     this.router.post('/login', passport.authenticate('login', { failureRedirect: '/api/sessions/faillogin' }), this.controller.loginUserPassport.bind(this.controller));
     this.router.post('/register', passport.authenticate('register', { failureRedirect: '/api/sessions/failregister' }), this.controller.registerUserPassport.bind(this.controller));

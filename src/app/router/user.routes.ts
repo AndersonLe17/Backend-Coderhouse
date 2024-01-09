@@ -1,4 +1,3 @@
-import passport from "passport";
 import { RouterConfig } from "../../config/RouterConfig";
 import { UserController } from "../controlller/user.controller";
 import { authenticationLogin } from "../middlewares/authentication.middleware";
@@ -11,17 +10,9 @@ export class UserRouter extends RouterConfig<UserController> {
   }
 
   public routes(): void {
-    // GET ROUTES
-
-    // POST ROUTES
-
-    // PUT ROUTES
-
-    // DELETE ROUTES
-    
-    // MIDDLEWARE AUTH
     this.router.get("/profile", authenticationLogin, this.controller.getUserByEmailToken.bind(this.controller));
     this.router.get("/cart", authenticationLogin, this.controller.getUserByToken.bind(this.controller));
+    this.router.put("/premium/:uid", this.controller.updateUserPremium.bind(this.controller));
     this.router.put("/:uid/cart/:cid", authenticationLogin, this.controller.updateUserAddCart.bind(this.controller));
   }
 }

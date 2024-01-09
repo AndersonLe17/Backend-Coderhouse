@@ -10,4 +10,12 @@ export const generateToken = (user: User) => {
     );
 };
 
+export const generateTokenForgotPassword = (user: User) => {
+    return jwt.sign(
+        {email: user.email, firstName: user.firstName},
+        process.env.JWT_SECRET as string,
+        { expiresIn: 3600, subject: String(user._id) }
+    );
+}
+
 export const validateToken = (token: string) => jwt.verify(token, process.env.JWT_SECRET as string);

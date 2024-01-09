@@ -16,3 +16,15 @@ export const mailTicket = (tickec: Ticket) => {
         `
     };
 };
+
+export const mailForgotPassword = (email: string, url: string) => {
+    return {
+        from: enviroment.getStringEnv('GOOGLE_USER'),
+        to: email,
+        subject: `E-Commerce - Recuperación de contraseña`,
+        html: `
+        <h1>Recuperación de contraseña</h1>
+        <p>Para recuperar su contraseña haga click <a href="${url}">aquí</a></p>
+        `
+    };
+};

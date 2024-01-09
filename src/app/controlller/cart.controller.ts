@@ -11,6 +11,7 @@ import { mailTicket } from "../../utils/mail/purchase.mail";
 import { CartError } from "../dao/domain/cart/cart.error";
 import { ProductError } from "../dao/domain/product/product.error";
 import { UserError } from "../dao/domain/user/user.error";
+import { JsonWebToken } from "../../utils/jwt/JsonWebToken";
 
 export class CartController {
     private readonly cartService: CartService;
@@ -38,18 +39,20 @@ export class CartController {
         HttpResponse.Ok(res, cart);
       } else {
         throw new CartError("Cart not found");
-        // HttpResponse.NotFound(res, "Cart not found");
       }
     }
     
     public async addProductToCart(req: Request, res: Response) {
       const {cid, pid} = req.params;
+      const {sub,role} = req.user as JsonWebToken;
       const cart = await this.cartService.findOneById(cid);
       const product = await this.productService.findById(pid);
       const newCartItems: Map<string, CartProduct> = new Map();
       
+      if (role === "premium" && (product?.owner)?.toString() === sub) throw new ProductError("Unauthorized");
+      
       if (cart && product) { // TODO: Validar stock del producto
-        cart.products.push({product: pid, quantity: 1}); 
+        cart.products.push({product: pid, quantity: 1});
 
         cart.products.forEach(p => newCartItems.get(p.product.toString())
           ? newCartItems.get(p.product.toString())!.quantity += p.quantity 

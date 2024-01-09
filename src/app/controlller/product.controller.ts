@@ -3,6 +3,7 @@ import { ProductService } from "../services/product.service";
 import { HttpResponse } from '../../config/HttpResponse';
 import { Product } from '../dao/domain/product/Product';
 import { ProductError } from '../dao/domain/product/product.error';
+import { JsonWebToken } from '../../utils/jwt/JsonWebToken';
 
 export class ProductController {
   private readonly productService: ProductService;
@@ -42,6 +43,8 @@ export class ProductController {
   
   public async createProduct(req: Request, res: Response) {
     const product: Product = req.body;
+    const { sub } = req.user as JsonWebToken;
+    product.owner = sub;
     const newProduct = await this.productService.create(product);
     
     req.app.get("io").emit("ioProduct", { action: "Add", payload: newProduct });
@@ -50,27 +53,43 @@ export class ProductController {
   
   public async deleteProduct(req: Request, res: Response) {
     const pid = req.params.pid;
-    const result = await this.productService.delete(pid);
+    const { sub, role } = req.user as JsonWebToken;
+    const product = await this.productService.findOne({_id: pid});
+    
+    if (role === 'admin' || (product?.owner)?.toString() === sub) {
+      const result = await this.productService.delete(pid);
 
-    if (result === 1) {
-      req.app.get("io").emit("ioProduct", { action: "Delete", payload: pid });
-      HttpResponse.Ok(res, "Product deleted");
-    } else {
+      if (result === 1) {
+        req.app.get("io").emit("ioProduct", { action: "Delete", payload: pid });
+        HttpResponse.Ok(res, "Product deleted");
+      } else {
+        throw new ProductError("Product not found");
+      }
+    } else if (!product){
       throw new ProductError("Product not found");
-      // HttpResponse.NotFound(res, "Product not found");
+    } else {
+      throw new ProductError("You are not authorized to delete this product");
     }
   }
   
   public async updateProduct(req: Request, res: Response) {
     const pid = req.params.pid;
-    const product = await this.productService.update(pid, req.body as Product);
+    const { sub, role } = req.user as JsonWebToken;
+    const product = await this.productService.findOne({_id: pid});
 
-    if (product) {
-      req.app.get("io").emit("ioProduct", { action: "Update", payload: product });
-      HttpResponse.Ok(res, product);
-    } else {
+    if (role === 'admin' || (product?.owner)?.toString() === sub) {
+      const updateProduct = await this.productService.update(pid, req.body as Product);
+
+      if (updateProduct) {
+        req.app.get("io").emit("ioProduct", { action: "Update", payload: updateProduct });
+        HttpResponse.Ok(res, updateProduct);
+      } else {
+        throw new ProductError("Product not found");
+      }
+    } else if (!product) {
       throw new ProductError("Product not found");
-      // HttpResponse.NotFound(res, "Product not found");
+    } else {
+      throw new ProductError("You are not authorized to update this product");
     }
   }
 

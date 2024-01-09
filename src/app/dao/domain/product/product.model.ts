@@ -10,5 +10,6 @@ export const ProductModel = model<Product, PaginateModel<Product>>("Products", n
   code: { type: String, unique: true, required: true },
   stock: { type: Number, required: true },
   category: { type: String, required: true },
+  owner: { type: Schema.Types.ObjectId, required: true, ref: 'Users' },
   status: { type: Boolean, default: true },
 }).plugin(paginate));
