@@ -34,7 +34,7 @@ async function loadProducts() {
     const res = await fetch(requestURL);
     const data = await res.json();
     tableProducts.children[1].innerHTML = '';
-    data.payload.payload.forEach((prod) => {
+    data.payload.data.forEach((prod) => {
         tableProducts.children[1].innerHTML += `
             <tr>
                 <td>${prod.code}</td>
@@ -72,11 +72,7 @@ document.getElementById('listProducts').addEventListener('click', async (e) => {
         }).then((res) => res.json());
         if (response.code === 201) {
             userData.cart = response.payload._id;
-            const res = await fetch(`http://localhost:8080/api/users/${userData.user}/cart/${userData.cart}`, {
-                method: 'PUT',
-            });
-            const resData = await res.json();
-            if (resData.code === 200) addCartProduct(e.target.dataset.id);
+            addCartProduct(e.target.dataset.id);
         } else {
             showToast("danger", response.message);
         }

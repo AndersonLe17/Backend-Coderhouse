@@ -10,8 +10,8 @@ import { transporter } from "../../utils/mail/nodemailer";
 import { mailTicket } from "../../utils/mail/purchase.mail";
 import { CartError } from "../dao/domain/cart/cart.error";
 import { ProductError } from "../dao/domain/product/product.error";
-import { UserError } from "../dao/domain/user/user.error";
 import { JsonWebToken } from "../../utils/jwt/JsonWebToken";
+import { User } from "../dao/domain/user/User";
 
 export class CartController {
     private readonly cartService: CartService;
@@ -26,8 +26,11 @@ export class CartController {
       this.ticketService = new TicketService();
     }
 
-    public async createCart(_req: Request, res: Response) {
+    public async createCart(req: Request, res: Response) {
+      const { sub } = req.user as JsonWebToken;
       const newCart = await this.cartService.create({} as Cart);
+      await this.userService.update(sub, {cart: newCart._id} as User);
+
       HttpResponse.Created(res, newCart);
     }
     
@@ -60,7 +63,7 @@ export class CartController {
         );
         
         cart.products = Array.from(newCartItems.values());
-        const updatedCart = await this.cartService.update(cid, cart); // TODO: Restar stock del producto
+        const updatedCart = await this.cartService.update(cid, cart);
 
         HttpResponse.Ok(res, updatedCart);
       } else {
@@ -80,7 +83,7 @@ export class CartController {
 
         if (existProductInCart) {
           cart.products = cart.products.filter(p => p.product.toString() !== pid);
-          const updatedCart = await this.cartService.update(cid, cart); // TODO: Sumar stock del producto
+          const updatedCart = await this.cartService.update(cid, cart);
 
           HttpResponse.Ok(res, updatedCart);
         } else {
@@ -131,7 +134,7 @@ export class CartController {
         
         if (existProductInCart) {
           cart.products = cart.products.map(p => p.product.toString() === pid ? {product: pid, quantity: quantity} : p);
-          const updatedCart = await this.cartService.update(cid, cart); // TODO: Actualizar stock del producto
+          const updatedCart = await this.cartService.update(cid, cart);
 
           HttpResponse.Ok(res, updatedCart);
         } else {
@@ -151,7 +154,7 @@ export class CartController {
 
       if (cart) {
         cart.products = [];
-        const updatedCart = await this.cartService.update(cid, cart); // TODO: Actualizar stock de los productos
+        const updatedCart = await this.cartService.update(cid, cart);
 
         HttpResponse.Ok(res, updatedCart);
       } else {
@@ -162,12 +165,13 @@ export class CartController {
 
     public async purchaseCart(req: Request, res: Response) {
       const { cid } = req.params;
-      const { uid } = req.body;
+      const { email } = req.user as JsonWebToken;
+      // const { uid } = req.body;
       const cart = await this.cartService.findById(cid);
-      const user = await this.userService.findOneById(uid);
-      if (!cart || !user) {
+      // const user = await this.userService.findOneById(uid);
+      if (!cart) {
         if (!cart) throw new CartError("Cart not found");
-        if (!user) throw new UserError("User not found");
+        // if (!user) throw new UserError("User not found");
         // HttpResponse.NotFound(res, cart ? "User" : "Cart" + " not found")
       }
 
@@ -177,7 +181,7 @@ export class CartController {
       const updatedStock = await this.productService.updateStock(productsFilter.map((p) => ({ _id: (p.product as any)._id, quantity: p.quantity })));
 
       if (updatedStock) {
-        const ticket = await this.ticketService.create({amount: Number(amount.toFixed(2)), purchaser: user.email } as Ticket);
+        const ticket = await this.ticketService.create({amount: Number(amount.toFixed(2)), purchaser: email } as Ticket);
         const cartFilter = cart.products.filter((p) => p.quantity > (p.product as any).stock).map(p => ({product: (p.product as any)._id, quantity: p.quantity}));
         const updatedCart = await this.cartService.update(cid, { products: cartFilter } as Cart);
         

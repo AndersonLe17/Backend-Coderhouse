@@ -1,0 +1,404 @@
+paths:
+  /api/products:
+    get:
+      tags:
+        - Products
+      summary: Get all products
+      operationId: getProductsPaginate
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          required: false
+          description: Page number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          required: false
+          description: Number of items per page
+        - in: query
+          name: category
+          schema:
+            type: string
+          required: false
+          description: Product category
+        - in: query
+          name: sort
+          schema:
+            type: string
+          required: false
+          description: Sort by price
+        - in: query
+          name: status
+          schema:
+            type: boolean
+          required: false
+          description: Product status
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductPaginate'
+    post:
+      tags:
+        - Products
+      summary: Create a new product
+      operationId: createProduct
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      security:
+        - cookieAuth: []
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NewProduct'
+        'MongoError 200':
+          description: Mongo Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MongoError'
+  /api/products/{pid}:
+    get:
+      tags:
+        - Products
+      summary: Get a product by id
+      operationId: getProductById
+      parameters:
+        - in: path
+          name: pid
+          schema:
+            type: string
+          required: true
+          description: Product id
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetProduct'
+        'Error 200':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductError'
+    put:
+      tags:
+        - Products
+      summary: Update a product by id
+      operationId: updateProductById
+      parameters:
+        - in: path
+          name: pid
+          schema:
+            type: string
+          required: true
+          description: Product id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetProduct'
+        'Error 200':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductError'
+    delete:
+      tags:
+        - Products
+      summary: Delete a product by id
+      operationId: deleteProductById
+      parameters:
+        - in: path
+          name: pid
+          schema:
+            type: string
+          required: true
+          description: Product id
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteProduct'
+        'Error 200':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductError'
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: tokenJWT
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+          required: false
+        title:
+          type: string
+        description:
+          type: string
+        price:
+          type: number
+        thumbnail:
+          type: string
+          required: false
+        code:
+          type: string
+        stock:
+          type: number
+        category:
+          type: string
+        owner:
+          type: string
+          required: false
+        status:
+          type: boolean
+          required: false
+      example:
+        _id: "652c49707f1c544dc8ccd053"
+        title: "FIFA 21"
+        description: "El videojuego de simulación de fútbol"
+        price: 59.99
+        thumbnail: "No image"
+        code: "VID-001"
+        stock: 93
+        category: "Videojuegos"
+        owner: "65748e0a6698b365a3d295fa"
+        status: true
+    ProductError:
+      type: object
+      properties:
+        code:
+          type: number
+        status:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      example:
+        code: 200
+        status: "Error"
+        message: "Product not found"
+        error: ProductError
+    MongoError:
+      type: object
+      properties:
+        code:
+          type: number
+        status:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      example:
+        code: 200
+        status: "Error"
+        message: "E11000 duplicate key error collection: ecommerce.products index: _id_ dup key: { _id: ObjectId('652c49707f1c544dc8ccd053') }"
+        error: MongoServerError
+    ProductPaginate:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+        payload:
+          type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Product'
+            hasNextPage:
+              type: boolean
+            hasPrevPage:
+              type: boolean
+            nextLink:
+              type: url
+            nextPage:
+              type: number
+            page: 
+              type: number
+            prevLink:
+              type: url
+            prevPage:
+              type: number
+            totalDocs:
+              type: number
+            totalPages:
+              type: number
+        status:
+          type: string
+      example:
+        code: 200
+        message: "Success"
+        payload:
+          data:
+            - _id: "652c49707f1c544dc8ccd053"
+              title: "FIFA 21"
+              description: "El videojuego de simulación de fútbol"
+              price: 59.99
+              thumbnail: "No image"
+              code: "VID-001"
+              stock: 93
+              category: "Videojuegos"
+              owner: "65748e0a6698b365a3d295fa"
+              status: true
+          hasNextPage: false
+          hasPrevPage: false
+          nextLink: null
+          nextPage: null
+          page: 1
+          prevLink: null
+          prevPage: null
+          totalDocs: 1
+          totalPages: 1
+        status: "Ok"
+    NewProduct:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+        payload:
+          type: object
+          properties:
+            _id:
+              type: string
+            title:
+              type: string
+            description:
+              type: string
+            price:
+              type: number
+            thumbnail:
+              type: string
+            code:
+              type: string
+            stock:
+              type: number
+            category:
+              type: string
+            owner:
+              type: string
+            status:
+              type: boolean
+        status:
+          type: string
+      example:
+        code: 201
+        message: "Success"
+        payload:
+          _id: "652c49707f1c544dc8ccd053"
+          title: "FIFA 21"
+          description: "El videojuego de simulación de fútbol"
+          price: 59.99
+          thumbnail: "No image"
+          code: "VID-001"
+          stock: 93
+          category: "Videojuegos"
+          owner: "65748e0a6698b365a3d295fa"
+          status: true
+        status: "Created"
+    GetProduct:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+        payload:
+          type: object
+          properties:
+            _id:
+              type: string
+            title:
+              type: string
+            description:
+              type: string
+            price:
+              type: number
+            thumbnail:
+              type: string
+            code:
+              type: string
+            stock:
+              type: number
+            category:
+              type: string
+            owner:
+              type: string
+            status:
+              type: boolean
+        status:
+          type: string
+      example:
+        code: 200
+        message: "Success"
+        payload:
+          _id: "652c49707f1c544dc8ccd053"
+          title: "FIFA 21"
+          description: "El videojuego de simulación de fútbol"
+          price: 59.99
+          thumbnail: "No image"
+          code: "VID-001"
+          stock: 93
+          category: "Videojuegos"
+          owner: "65748e0a6698b365a3d295fa"
+          status: true
+        status: "Ok"
+    DeleteProduct:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+        payload:
+          type: string
+        status:
+          type: string
+      example:
+        code: 200
+        message: "Success"
+        payload: "Product deleted"
+        status: "Ok"

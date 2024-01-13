@@ -71,8 +71,7 @@ document.querySelector('#btnPurchase').addEventListener('click', async () => {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({uid: userData.user})
+        }
     }).then((res) => res.json());
     if (response.code === 200) {
         Swal.fire({

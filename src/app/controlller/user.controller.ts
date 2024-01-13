@@ -4,7 +4,6 @@ import { User } from "../dao/domain/user/User";
 import UserService from "../services/user.service";
 import { JsonWebToken } from "../../utils/jwt/JsonWebToken";
 import { UserError } from "../dao/domain/user/user.error";
-import { ProductError } from "../dao/domain/product/product.error";
 
 export class UserController {
   private readonly userService: UserService;
@@ -34,17 +33,6 @@ export class UserController {
       HttpResponse.Ok(res, { _id, cart });
     } else {
       throw new UserError("User not found");
-    }
-  }
-
-  public async updateUserAddCart(req: Request, res: Response) {
-    const {uid, cid} = req.params;
-    const user = await this.userService.update(uid, {cart: cid} as User);
-
-    if (user) {
-      HttpResponse.Ok(res, {cart: user.cart});
-    } else {
-      throw new ProductError("Product not found");
     }
   }
 

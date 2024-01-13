@@ -11,6 +11,8 @@ import passport from "passport";
 import { PassportConfig } from "./config/PassportConfig";
 import { logger } from "./utils/logger/winston";
 import { errorMiddleware } from "./app/middlewares/error.middleware";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSetup } from "./utils/swagger/SwaggerSpecs";
 require("express-async-errors");
 
 class App extends ServerConfig {
@@ -58,6 +60,7 @@ class App extends ServerConfig {
       const route = new Route();
       this.app.use(route.path, route.router);
     });
+    this.app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSetup));
     this.app.use(errorMiddleware);
   }
 

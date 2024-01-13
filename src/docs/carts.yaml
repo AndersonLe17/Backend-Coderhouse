@@ -1,0 +1,522 @@
+paths:
+  /api/carts:
+    post:
+      tags:
+        - Carts
+      summary: Create a cart
+      operationId: createCart
+      security:
+        - cookieAuth: []
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedCart'
+  /api/carts/{cid}:
+    get:
+      tags:
+        - Carts
+      summary: Get a cart
+      operationId: getCart
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Cart id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCart'
+        'Error 200':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorCart'
+    put:
+      tags:
+        - Carts
+      summary: Update a cart
+      operationId: updateCart
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Cart id
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              products:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ProductCart'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        'Error Cart 200':
+          description: Cart Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorCart'
+        'Error Product 200':
+          description: Product Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductError'
+    delete:
+      tags:
+        - Carts
+      summary: Delete a cart
+      operationId: deleteCart
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Cart id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreatedCart'
+        'Error 200':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorCart'
+  /api/carts/{cid}/products/{pid}:
+    post:
+      tags:
+        - Carts
+      summary: Add a product to a cart
+      operationId: addProductToCart
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Cart id
+          schema:
+            type: string
+        - name: pid
+          in: path
+          required: true
+          description: Product id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        'Error Cart 200':
+          description: Cart Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorCart'
+        'Error Product 200':
+          description: Product Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductError'
+    put:
+      tags:
+        - Carts
+      summary: Update a product in a cart
+      operationId: updateProductToCart
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Cart id
+          schema:
+            type: string
+        - name: pid
+          in: path
+          required: true
+          description: Product id
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              quantity:
+                type: number
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        'Error Product Cart 200':
+          description: Product Not Found in Cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProductCart'
+        'Error Cart 200':
+          description: Cart Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorCart'
+        'Error Product 200':
+          description: Product Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductError'
+    delete:
+      tags:
+        - Carts
+      summary: Delete a product from a cart
+      operationId: deleteProductToCart
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Cart id
+          schema:
+            type: string
+        - name: pid
+          in: path
+          required: true
+          description: Product id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        'Error Product Cart 200':
+          description: Product Not Found in Cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorProductCart'
+        'Error Cart 200':
+          description: Cart Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorCart'
+        'Error Product 200':
+          description: Product Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductError'
+  /api/carts/{cid}/purchase:
+    post:
+      tags:
+        - Carts
+      summary: Purchase a cart
+      operationId: purchaseCart
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Cart id
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Ticket'
+        'Out Stock 200':
+          description: Products out of stock
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        'Error 200':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorCart'
+        'Error Stock 200':
+          description: Error updating stock
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorStock'
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: tokenJWT
+  schemas:
+    CreatedCart:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+        payload:
+          type: object
+          properties:
+            _id:
+              type: string
+            products:
+              type: array
+              items:
+                - product: []
+        status:
+          type: string
+      example:
+        code: 201
+        message: "Success"
+        payload:
+          _id: 65757b3facd88009f2be000a
+          products: []
+        status: "Created"
+    GetCart:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+        payload:
+          type: object
+          properties:
+            _id:
+              type: string
+            products:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductCartDetail'
+        status:
+          type: string
+      example:
+        code: 200
+        message: "Success"
+        payload:
+          _id: 65757b3facd88009f2be000a
+          products:
+            - product:
+                _id: 652c4f157f1c544dc8ccd087
+                title: "Uno"
+                description: "Juego de cartas de deshacerse de todas las cartas"
+                price: 9.99
+                thumbnail: "No image"
+                code: "JUE-008"
+                stock: 90
+                category: "Juegos de Mesa"
+                owner: "65748e0a6698b365a3d295fa"
+                status: true
+              quantity: 1
+        status: "OK"
+    ErrorCart:
+      type: object
+      properties:
+        code:
+          type: number
+        status:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      example:
+        code: 200
+        status: "Error"
+        message: "Cart not found"
+        error: CartError
+    ErrorProductCart:
+      type: object
+      properties:
+        code:
+          type: number
+        status:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      example:
+        code: 200
+        status: "Error"
+        message: "Product not found in cart"
+        error: CartError
+    Ticket:
+      type: object
+      properties:
+        code:
+          type: number
+        status:
+          type: string
+        payload:
+          type: object
+          properties:
+            _id:
+              type: string
+            code:
+              type: string
+            purchaseDateTime:
+              type: date
+            amount:
+              type: number
+            purchase:
+              type: string
+        message:
+          type: string
+      example:
+        code: 200
+        status: "OK"
+        payload:
+          _id: 65760104222b0fa6da106ce7
+          code: "65760104222b0fa6da106ce8"
+          purchaseDateTime: "2023-12-10T18:18:44.892+00:00"
+          amount: 129.98
+          purchase: "username@gmail.com"
+        message: "Success"
+    ErrorStock:
+      type: object
+      properties:
+        code:
+          type: number
+        status:
+          type: string
+        message:
+          type: string
+        error:
+          type: string
+      example:
+        code: 200
+        status: "Error"
+        message: "Error updating stock"
+        error: "ProductError"
+    Cart:
+      type: object
+      properties:
+        code:
+          type: number
+        message:
+          type: string
+        payload:
+          type: object
+          properties:
+            _id:
+              type: string
+            products:
+              type: array
+              items:
+                $ref: '#/components/schemas/ProductCart'
+        status:
+          type: string
+      example:
+        code: 200
+        message: "Success"
+        payload:
+          _id: 65757b3facd88009f2be000a
+          products:
+            - product: 652c4f157f1c544dc8ccd087
+              quantity: 3
+            - product: 652c49707f1c544dc8ccd053
+              quantity: 2
+        status: "OK"
+    ProductCart:
+      type: object
+      properties:
+        product:
+          type: string
+        quantity:
+          type: number
+      example:
+        product: 652c4f157f1c544dc8ccd087
+        quantity: 1
+    ProductCartDetail:
+      type: object
+      properties:
+        product:
+          type: object
+          properties:
+            _id:
+              type: string
+              required: false
+            title:
+              type: string
+            description:
+              type: string
+            price:
+              type: number
+            thumbnail:
+              type: string
+              required: false
+            code:
+              type: string
+            stock:
+              type: number
+            category:
+              type: string
+            owner:
+              type: string
+              required: false
+            status:
+              type: boolean
+              required: false
+        quantity:
+          type: number
+      example:
+        product:
+          _id: 652c4f157f1c544dc8ccd087
+          title: "Uno"
+          description: "Juego de cartas de deshacerse de todas las cartas"
+          price: 9.99
+          thumbnail: "No image"
+          code: "JUE-008"
+          stock: 90
+          category: "Juegos de Mesa"
+          owner: "65748e0a6698b365a3d295fa"
+          status: true
+        quantity: 1

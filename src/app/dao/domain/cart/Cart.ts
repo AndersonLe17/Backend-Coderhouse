@@ -1,5 +1,5 @@
 export class Cart {
-    private _id?: string;
+    public _id?: string;
     public products: CartProduct[];
 
     constructor(products: CartProduct[]) {

@@ -25,6 +25,7 @@ export class HttpResponse {
 
   static Error(res: Response, error: Error): Response {
     return res.status(HttpStatus.OK).json({
+      code: HttpStatus.OK,
       status: "Error",
       message: error.message,
       error: error.name

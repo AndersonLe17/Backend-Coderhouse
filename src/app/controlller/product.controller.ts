@@ -13,7 +13,7 @@ export class ProductController {
   }
 
   public async getProductsPaginate(req: Request, res: Response) {
-    const url = new URL(`${req.protocol}://${req.get("host")}${req.originalUrl}`);    
+    const url = new URL(`${req.protocol}://${req.get("host")}${req.originalUrl}`);
     const {docs, totalPages, totalDocs, prevPage, nextPage, page, hasPrevPage, hasNextPage} = await this.productService.findProductsPaginate(req.query);
     
     url.searchParams.set("page", String(prevPage));
@@ -21,7 +21,7 @@ export class ProductController {
     url.searchParams.set("page", String(nextPage));
     const nextLink = String(url);
     
-    HttpResponse.Ok(res, { payload: docs, totalDocs, totalPages, prevPage, nextPage, page, hasPrevPage, hasNextPage, prevLink: hasPrevPage ? prevLink : null, nextLink: hasNextPage ? nextLink : null });
+    HttpResponse.Ok(res, { data: docs, totalDocs, totalPages, prevPage, nextPage, page, hasPrevPage, hasNextPage, prevLink: hasPrevPage ? prevLink : null, nextLink: hasNextPage ? nextLink : null });
   }
 
   public async getProducts(_req: Request, res: Response) {
