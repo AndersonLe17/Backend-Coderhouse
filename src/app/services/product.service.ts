@@ -50,4 +50,12 @@ export class ProductService extends ServiceConfig<Product> {
 
     return productsUpdate.modifiedCount === products.length;
   }
+
+  public async deleteTestProducts(): Promise<boolean> {
+    const result = await this.entityModel.deleteMany({category: "Test"});
+
+    return result.deletedCount > 0;
+  }
+
 }
+

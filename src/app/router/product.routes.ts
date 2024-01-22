@@ -19,5 +19,6 @@ export class ProductRouter extends RouterConfig<ProductController> {
     this.router.put('/:pid', authorizationProduct, this.controller.updateProduct.bind(this.controller));
     // DELETE ROUTES
     this.router.delete('/:pid', authorizationProduct, this.controller.deleteProduct.bind(this.controller));
+    this.router.delete('/delete/test', this.controller.deleteTestProducts.bind(this.controller));
   }
 }

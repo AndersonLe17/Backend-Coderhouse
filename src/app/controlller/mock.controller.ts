@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { HttpResponse } from "../../config/HttpResponse";
-import { ProductMock } from "../../test/mocks/product.mock";
+import { ProductMock } from "../../utils/mocks/product.mock";
 
 export class MockController {
 

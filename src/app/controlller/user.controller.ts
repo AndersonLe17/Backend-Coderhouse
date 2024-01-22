@@ -49,4 +49,15 @@ export class UserController {
       throw new UserError("User not found");
     }
   }
+
+  public async deleteUserByEmail(req: Request, res: Response) {
+    const {email} = req.params;
+    const result = await this.userService.deleteByEmail(email);
+
+    if (result > 0) {
+      HttpResponse.Ok(res, {message: "User deleted"});
+    } else {
+      throw new UserError("User not found");
+    }
+  }
 }

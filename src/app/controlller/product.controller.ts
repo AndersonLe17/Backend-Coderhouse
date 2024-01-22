@@ -71,6 +71,11 @@ export class ProductController {
       throw new ProductError("You are not authorized to delete this product");
     }
   }
+
+  public async deleteTestProducts(_req: Request, res: Response) {
+    const result = await this.productService.deleteTestProducts();
+    HttpResponse.Ok(res, result? "Test products deleted" : "Test products not found");
+  }
   
   public async updateProduct(req: Request, res: Response) {
     const pid = req.params.pid;

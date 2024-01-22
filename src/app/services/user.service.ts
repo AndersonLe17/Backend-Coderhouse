@@ -14,4 +14,9 @@ export default class UserService extends ServiceConfig<User> {
   public async findOneById(userId: string): Promise<User | null> {
     return await this.entityModel.findOne({ _id: userId });
   }
+
+  public async deleteByEmail(email: string): Promise<number> {
+    const deleteEntity = await this.entityModel.deleteOne({ email });
+    return deleteEntity.deletedCount || 0;
+  }
 }
