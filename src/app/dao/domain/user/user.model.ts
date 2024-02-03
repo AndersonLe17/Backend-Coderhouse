@@ -10,5 +10,17 @@ export const UserModel = mongoose.model<User>("Users", new mongoose.Schema<User>
   cart: {type: Schema.Types.ObjectId, ref: 'Carts'},
   role: {type: String, enum: ['admin', 'user', 'premium'], default: 'user', required: true},
   fromGithub: {type: Boolean, default: false, required: true},
-  isforgottenPassword: {type: Boolean, default: false, required: true}
+  isforgottenPassword: {type: Boolean, default: false, required: true},
+  documents: {
+    type: [
+      {
+        name: {type: String, required: true},
+        reference: {type: String, required: true},
+        _id: false
+      }
+    ],
+    default: []
+  },
+  lastConnection: {type: Date},
+  status: {type: String, enum: ['active', 'inactive', 'verified'], default: 'active', required: true}
 }));

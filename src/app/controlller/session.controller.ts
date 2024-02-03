@@ -20,7 +20,8 @@ export class SessionController {
     if (req.user) {
       const user = req.user as User;
       const token = generateToken(user);
-      
+      await this.userService.update(user._id!, { lastConnection: new Date() } as User);
+
       res.status(HttpStatus.OK).cookie('tokenJWT', token, {httpOnly: true}).json({ code: HttpStatus.OK, status: "OK", message: "Logged in", token });
     } else {
       throw new UserError("Invalid email or password.");
@@ -39,6 +40,8 @@ export class SessionController {
     if (req.user) {
       const user = req.user as User;
       const token = generateToken(user);
+      const lastConnection = new Date();
+      await this.userService.update(user._id!, { lastConnection } as User);
 
       res.status(HttpStatus.OK).cookie('tokenJWT', token, {httpOnly: true}).redirect('/home');
     } else {

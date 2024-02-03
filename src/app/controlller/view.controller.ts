@@ -3,6 +3,7 @@ import { ProductService } from "../services/product.service";
 import { JsonWebToken } from "../../utils/jwt/JsonWebToken";
 import { logger } from "../../utils/logger/winston";
 import UserService from "../services/user.service";
+import { User } from "../dao/domain/user/User";
 
 export class ViewController {
   private readonly productService: ProductService;
@@ -54,6 +55,10 @@ export class ViewController {
   }
 
   public async viewLogout(req: Request, res: Response) {
+    if (req.user) {
+      const user = req.user as JsonWebToken;
+      await this.userService.update(user.sub, { lastConnection: new Date() } as User);
+    }
     req.logout((_error) => {
       res.clearCookie('tokenJWT').redirect('/login');
     });
