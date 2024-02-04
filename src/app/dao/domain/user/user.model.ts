@@ -21,6 +21,7 @@ export const UserModel = mongoose.model<User>("Users", new mongoose.Schema<User>
     ],
     default: []
   },
+  profile: {type: String},
   lastConnection: {type: Date},
   status: {type: String, enum: ['active', 'inactive', 'verified'], default: 'active', required: true}
 }));

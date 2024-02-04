@@ -15,6 +15,7 @@ export class UserRouter extends RouterConfig<UserController> {
     this.router.get("/cart", authenticationLogin, this.controller.getUserByToken.bind(this.controller));
     this.router.put("/premium/:uid", this.controller.updateUserPremium.bind(this.controller));
     this.router.post("/:uid/documents", authenticationLogin, upload.array('files'), this.controller.updateDocuments.bind(this.controller));
+    this.router.post("/:uid/profile", authenticationLogin, upload.single('file'), this.controller.updateProfile.bind(this.controller));
     this.router.delete("/test/delete/:email", this.controller.deleteUserByEmail.bind(this.controller));
   }
 }

@@ -10,10 +10,11 @@ export class User {
   fromGithub: boolean;
   isforgottenPassword: boolean;
   documents: Document[];
+  profile: string;
   lastConnection?: Date;
   status: string;
 
-  constructor(email: string, password: string, firstName: string, lastName: string, age: number, role: string, fromGithub: boolean, isForgottenPassword: boolean, documents: Document[], status: string) {
+  constructor(email: string, password: string, firstName: string, lastName: string, age: number, role: string, fromGithub: boolean, isForgottenPassword: boolean, documents: Document[], profile: string, status: string) {
     this.email = email;
     this.password = password;
     this.firstName = firstName;
@@ -23,6 +24,7 @@ export class User {
     this.fromGithub = fromGithub;
     this.isforgottenPassword = isForgottenPassword;
     this.documents = documents;
+    this.profile = profile;
     this.status = status;
   }
 }

@@ -23,8 +23,8 @@ export class UserController {
     const user = await this.userService.findByEmail(email);
 
     if (user) {
-      const { firstName, lastName, age, email, _id } = user;
-      HttpResponse.Ok(res, { firstName, lastName, age, email, _id });
+      const { firstName, lastName, age, email, _id, role, documents, profile, status } = user;
+      HttpResponse.Ok(res, { firstName, lastName, age, email, _id, role, documents, profile, status});
     } else {
       throw new UserError("User not found");
     }
@@ -97,30 +97,32 @@ export class UserController {
     } else {
       throw new UserError("User not found");
     }
-    
-    
-    // const userUpdate = await this.userService.update(uid, {documents: [...user!.documents, document]} as User);
+  }
 
-    // const {sub} = req.user as JsonWebToken;
-    // const {name} = req.body;
-    // const user = await this.userService.findOne({ _id: sub });
-    // const typeDocument = req.file?.mimetype.split('/')[1];
+  public async updateProfile(req: Request, res: Response) {
+    const { uid } = req.params;
+    const file = req.file;
+    const user = await this.userService.findOne({ _id: uid });
 
-    // const storageRef = ref(this.storage, `${this.getPathDirectory(typeDocument!)}/${req.file?.originalname + "_" + sub}`);
-    
-    // const snapshot = await uploadBytesResumable(storageRef, req.file?.buffer!, { contentType: req.file?.mimetype });
+    const typeDocument = file?.mimetype.split('/')[1];
+    if (typeDocument !== 'jpeg' && typeDocument !== 'png') throw new Error("Invalid file type");
 
-    // const downloadURL = await getDownloadURL(snapshot.ref);
+    if (user?.profile) {
+      const storageRef = ref(this.storage, `profiles/profile_${uid}`);
+      await deleteObject(storageRef);
+    }
 
-    // const document: Document = { name, reference: downloadURL};
+    const storageRef = ref(this.storage, `profiles/profile_${uid}`);
+    const snapshot = await uploadBytesResumable(storageRef, file?.buffer!, { contentType: file?.mimetype });
+    const downloadURL = await getDownloadURL(snapshot.ref);
 
-    // const userUpdate = await this.userService.update(uid, {documents: [...user!.documents, document]} as User);
+    const userUpdate = await this.userService.update(uid, {profile: downloadURL} as User);
 
-    // if (userUpdate) {
-    //   HttpResponse.Ok(res, {documents: userUpdate.documents});
-    // } else {
-    //   throw new UserError("User not found");
-    // }
+    if (userUpdate) {
+      HttpResponse.Ok(res, {profile: userUpdate.profile});
+    } else {
+      throw new UserError("User not found");
+    }
   }
 
   public async discardDocuments(user: User, typeDocument: string[]) {

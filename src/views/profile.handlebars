@@ -15,10 +15,10 @@
         <div class="d-flex flex-wrap gap-3 my-3" >
             <div class="d-flex w-100 justify-content-center">
                 <div class="position-relative">
-                    <img src="/static/img/profile.png" alt="profileImg" class="rounded-circle border border-2" width="250">
+                    <img src="/static/img/profile.png" id="imgProfile" alt="profileImg" class="rounded-circle border border-2" width="250">
                     <div class="btn btn-secondary rounded-circle position-absolute translate-middle" style="top: 85%; left: 85%;" onclick="document.getElementById('profileImage').click();">
                         <i class="fa-regular fa-id-badge"></i>
-                        <input id="profileImage" type="file" style="display:none;"/>
+                        <input id="profileImage" type="file" style="display:none;" accept="image/png, image/jpeg"/>
                     </div>
                 </div>
             </div>
@@ -41,14 +41,6 @@
             </div>
         </div>
         <form class="row g-3" id="formProfile">
-            <div class="col-md-9">
-                <label for="inputEmail" class="form-label">Email:</label>
-                <input type="email" name="email" class="form-control" id="inputEmail" readonly>
-            </div>
-            <div class="col-md-3">
-                <label for="inputAge" class="form-label">Age:</label>
-                <input type="number" name="age" class="form-control" id="inputAge" readonly>
-            </div>
             <div class="col-md-6">
                 <label for="inputFirstname" class="form-label">Firstname:</label>
                 <input type="text" name="firstName" class="form-control" id="inputFirstname" readonly>
@@ -56,6 +48,22 @@
             <div class="col-md-6">
                 <label for="inputLastname" class="form-label">Lastname:</label>
                 <input type="text" name="lastName" class="form-control" id="inputLastname" readonly>
+            </div>
+            <div class="col-md-6">
+                <label for="inputEmail" class="form-label">Email:</label>
+                <input type="email" name="email" class="form-control" id="inputEmail" readonly>
+            </div>
+            <div class="col-md-2">
+                <label for="inputAge" class="form-label">Age:</label>
+                <input type="number" name="age" class="form-control" id="inputAge" readonly>
+            </div>
+            <div class="col-md-2">
+                <label for="inputRole" class="form-label">Role:</label>
+                <input type="text" name="role" class="form-control" id="inputRole" readonly>
+            </div>
+            <div class="col-md-2">
+                <label for="inputStatus" class="form-label">Status:</label>
+                <input type="text" name="status" class="form-control" id="inputStatus" readonly>
             </div>
         </form>
     </div>
