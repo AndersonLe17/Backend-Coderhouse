@@ -4,12 +4,18 @@ import { HttpResponse } from '../../config/HttpResponse';
 import { Product } from '../dao/domain/product/Product';
 import { ProductError } from '../dao/domain/product/product.error';
 import { JsonWebToken } from '../../utils/jwt/JsonWebToken';
+import { initializeApp } from "firebase/app";
+import { firebaseConfig } from "../../utils/firebase/FirebaseConfig";
+import { FirebaseStorage, getStorage, ref, getDownloadURL, uploadBytesResumable, deleteObject } from "firebase/storage";
 
 export class ProductController {
   private readonly productService: ProductService;
+  private readonly storage: FirebaseStorage;
 
   constructor() {
     this.productService = new ProductService();
+    initializeApp(firebaseConfig);
+    this.storage = getStorage();
   }
 
   public async getProductsPaginate(req: Request, res: Response) {
@@ -43,12 +49,59 @@ export class ProductController {
   
   public async createProduct(req: Request, res: Response) {
     const product: Product = req.body;
+    const file = req.file;
     const { sub } = req.user as JsonWebToken;
     product.owner = sub;
-    const newProduct = await this.productService.create(product);
     
+    const newProduct = await this.productService.create(product);
+    if (file) {
+      const typeDocument = file?.mimetype.split('/')[1];
+      if (typeDocument !== 'jpeg' && typeDocument !== 'png') throw new Error("Invalid file type");
+      
+      const storageRef = ref(this.storage, `products/thumbnail_${newProduct._id}`);
+      const snapshot = await uploadBytesResumable(storageRef, file?.buffer!, { contentType: file?.mimetype });
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      const updateProduct = await this.productService.update(newProduct._id!, {thumbnail: downloadURL} as Product);
+      newProduct.thumbnail = updateProduct?.thumbnail!;
+    }
+
     req.app.get("io").emit("ioProduct", { action: "Add", payload: newProduct });
     HttpResponse.Created(res, newProduct);
+  }
+
+  public async updateProduct(req: Request, res: Response) {
+    const product: Product = req.body;
+    const pid = req.params.pid;
+    const file = req.file;
+    const { sub, role } = req.user as JsonWebToken;
+    const findProduct = await this.productService.findOne({_id: pid});
+
+    if (role === 'admin' || (findProduct?.owner)?.toString() === sub) {
+      if (file) {
+        const typeDocument = file?.mimetype.split('/')[1];
+        if (typeDocument !== 'jpeg' && typeDocument !== 'png') throw new Error("Invalid file type");
+        
+        const storageRef = ref(this.storage, `products/thumbnail_${pid}`);
+        const snapshot = await uploadBytesResumable(storageRef, file?.buffer!, { contentType: file?.mimetype });
+        const downloadURL = await getDownloadURL(snapshot.ref);
+
+        product.thumbnail = downloadURL;
+      }
+
+      const updateProduct = await this.productService.update(pid, product);
+
+      if (updateProduct) {
+        req.app.get("io").emit("ioProduct", { action: "Update", payload: updateProduct });
+        HttpResponse.Ok(res, updateProduct);
+      } else {
+        throw new ProductError("Product not found");
+      }
+    } else if (!findProduct) {
+      throw new ProductError("Product not found");
+    } else {
+      throw new ProductError("You are not authorized to update this product");
+    }
   }
   
   public async deleteProduct(req: Request, res: Response) {
@@ -60,6 +113,10 @@ export class ProductController {
       const result = await this.productService.delete(pid);
 
       if (result === 1) {
+        if (product?.thumbnail !== "No image") {
+          const storageRef = ref(this.storage, `products/thumbnail_${pid}`);
+          deleteObject(storageRef);
+        }
         req.app.get("io").emit("ioProduct", { action: "Delete", payload: pid });
         HttpResponse.Ok(res, "Product deleted");
       } else {
@@ -75,27 +132,6 @@ export class ProductController {
   public async deleteTestProducts(_req: Request, res: Response) {
     const result = await this.productService.deleteTestProducts();
     HttpResponse.Ok(res, result? "Test products deleted" : "Test products not found");
-  }
-  
-  public async updateProduct(req: Request, res: Response) {
-    const pid = req.params.pid;
-    const { sub, role } = req.user as JsonWebToken;
-    const product = await this.productService.findOne({_id: pid});
-
-    if (role === 'admin' || (product?.owner)?.toString() === sub) {
-      const updateProduct = await this.productService.update(pid, req.body as Product);
-
-      if (updateProduct) {
-        req.app.get("io").emit("ioProduct", { action: "Update", payload: updateProduct });
-        HttpResponse.Ok(res, updateProduct);
-      } else {
-        throw new ProductError("Product not found");
-      }
-    } else if (!product) {
-      throw new ProductError("Product not found");
-    } else {
-      throw new ProductError("You are not authorized to update this product");
-    }
   }
 
   public async getCategories(_req: Request, res: Response) {
