@@ -19,4 +19,9 @@ export default class UserService extends ServiceConfig<User> {
     const deleteEntity = await this.entityModel.deleteOne({ email });
     return deleteEntity.deletedCount || 0;
   }
+
+  public async deleteUsers(users: User[]): Promise<number> {
+    const deleteEntity = await this.entityModel.deleteMany({ _id: { $in: users.map(u => u._id) } });
+    return deleteEntity.deletedCount || 0;
+  }
 }

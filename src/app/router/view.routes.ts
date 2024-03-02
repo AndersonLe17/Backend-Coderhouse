@@ -1,6 +1,6 @@
 import { RouterConfig } from "../../config/RouterConfig";
 import { ViewController } from "../controlller/view.controller";
-import { authenticationLogin, authenticationLogout } from "../middlewares/authentication.middleware";
+import { authenticationLogin, authenticationLogout, authenticationProfileAdmin } from "../middlewares/authentication.middleware";
 import { expirationReset } from "../middlewares/authorization.middleware";
 
 export class ViewRouter extends RouterConfig<ViewController> {
@@ -24,6 +24,8 @@ export class ViewRouter extends RouterConfig<ViewController> {
     this.router.get('/products', authenticationLogin, this.controller.viewPaginateProducts.bind(this.controller));
     this.router.get('/carts', authenticationLogin, this.controller.viewCartById.bind(this.controller));
     this.router.get('/loggerTest', this.controller.testLogger.bind(this.controller));
+    // MIDDLEWARE AUTHENTICATION
+    this.router.get('/users', authenticationProfileAdmin, this.controller.viewUsers.bind(this.controller));
   }
 
 }

@@ -7,13 +7,18 @@ import { JsonWebToken } from '../../utils/jwt/JsonWebToken';
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from "../../utils/firebase/FirebaseConfig";
 import { FirebaseStorage, getStorage, ref, getDownloadURL, uploadBytesResumable, deleteObject } from "firebase/storage";
+import { transporter } from '../../utils/mail/nodemailer';
+import UserService from '../services/user.service';
+import { deleteProduct } from '../../utils/mail/purchase.mail';
 
 export class ProductController {
   private readonly productService: ProductService;
+  private readonly userService: UserService;
   private readonly storage: FirebaseStorage;
 
   constructor() {
     this.productService = new ProductService();
+    this.userService = new UserService();
     initializeApp(firebaseConfig);
     this.storage = getStorage();
   }
@@ -109,6 +114,7 @@ export class ProductController {
     const { sub, role } = req.user as JsonWebToken;
     const product = await this.productService.findOne({_id: pid});
     
+    const isUserPremiumOwner = role === 'admin' && (product?.owner)?.toString() !== sub;
     if (role === 'admin' || (product?.owner)?.toString() === sub) {
       const result = await this.productService.delete(pid);
 
@@ -117,6 +123,7 @@ export class ProductController {
           const storageRef = ref(this.storage, `products/thumbnail_${pid}`);
           deleteObject(storageRef);
         }
+        if (isUserPremiumOwner) this.sendMailProductOwner(product?.owner!, product?.title!);
         req.app.get("io").emit("ioProduct", { action: "Delete", payload: pid });
         HttpResponse.Ok(res, "Product deleted");
       } else {
@@ -137,6 +144,13 @@ export class ProductController {
   public async getCategories(_req: Request, res: Response) {
     const categories = await this.productService.findCategories();
     HttpResponse.Ok(res, categories);
+  }
+
+  public async sendMailProductOwner(owner: string, product: string) {
+    const user = await this.userService.findById(owner);
+    if (!user) throw new Error("User not found");
+
+    transporter.sendMail(deleteProduct(user.email, product));
   }
 
 }

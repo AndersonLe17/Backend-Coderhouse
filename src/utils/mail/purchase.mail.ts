@@ -28,3 +28,27 @@ export const mailForgotPassword = (email: string, url: string) => {
         `
     };
 };
+
+export const mailInactivityUser = (email: string) => {
+    return {
+        from: enviroment.getStringEnv('GOOGLE_USER'),
+        to: email,
+        subject: `E-Commerce - Cuenta Eliminada por inactividad`,
+        html: `
+        <h1>Cuenta inactiva</h1>
+        <p>Su cuenta ha sido eliminada por inactividad</p>
+        `
+    };
+}
+
+export const deleteProduct = (email: string, product: string) => {
+    return {
+        from: enviroment.getStringEnv('GOOGLE_USER'),
+        to: email,
+        subject: `E-Commerce - Producto eliminado`,
+        html: `
+        <h1>Producto eliminado</h1>
+        <p>El producto ${product} ha sido eliminado</p>
+        `
+    };
+}

@@ -29,6 +29,12 @@ export class ViewController {
     res.render('home', {title: 'Products', products, name: `${token.firstName}`});
   }
 
+  public async viewUsers(_req: Request, res: Response) {
+    const usersData = await this.userService.findAll();
+    const users = usersData.map(user => ({_id: user._id, name: user.firstName + " " + user.lastName, email: user.email, role: user.role}));
+    res.render('users', {title: 'Users', users});
+  }
+
   public async viewRealTimeProducts(_req: Request, res: Response) {
     const products = await this.productService.findAll();
     res.render('realTimeProducts', {title: 'Products', products});

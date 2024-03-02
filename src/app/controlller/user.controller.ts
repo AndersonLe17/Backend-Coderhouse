@@ -8,6 +8,8 @@ import { FirebaseStorage, getStorage, ref, getDownloadURL, uploadBytesResumable,
 import { UserError } from "../dao/domain/user/user.error";
 import { firebaseConfig } from "../../utils/firebase/FirebaseConfig";
 import { decodeUtf8 } from "../../utils/decodeUTF-8";
+import { transporter } from "../../utils/mail/nodemailer";
+import { mailInactivityUser } from "../../utils/mail/purchase.mail";
 
 export class UserController {
   private readonly userService: UserService;
@@ -17,6 +19,12 @@ export class UserController {
     initializeApp(firebaseConfig);
     this.storage = getStorage();
   }
+
+  public async getUsers(_req: Request, res: Response) {
+    const users = await this.userService.findAll();
+    const userData = users.map(user => ({_id: user._id, name: user.firstName + " " + user.lastName, email: user.email, role: user.role}));
+    HttpResponse.Ok(res, userData);
+  } 
 
   public async getUserByEmailToken(req: Request, res: Response) {
     const { email } = req.user as User;
@@ -42,6 +50,18 @@ export class UserController {
     }
   }
 
+  public async getUserById(req: Request, res: Response) {
+    const {uid} = req.params;
+    const user = await this.userService.findOne({ _id: uid });
+
+    if (user) {
+      const { firstName, lastName, email, _id, role, status } = user;
+      HttpResponse.Ok(res, { firstName, lastName, email, _id, role, status});
+    } else {
+      throw new UserError("User not found");
+    }
+  }
+
   public async updateUserPremium(req: Request, res: Response) {
     const {uid} = req.params;
     const user = await this.userService.findOne({ _id: uid });
@@ -54,6 +74,52 @@ export class UserController {
       HttpResponse.Ok(res, {role: userUpdate.role});
     } else {
       throw new UserError("User not found");
+    }
+  }
+
+  public async updateUserRole(req: Request, res: Response) {
+    const {uid} = req.params;
+    const {role} = req.body;
+    console.log(req.body);
+    
+    const user = await this.userService.findOne({ _id: uid });
+    if (user) {
+      const userUpdate = await this.userService.update(uid, {role} as User);
+      if (userUpdate) {
+        HttpResponse.Ok(res, {role: userUpdate.role});
+      } else {
+        throw new UserError("User not found");
+      }
+    } else {
+      throw new UserError("User not found");
+    }
+  }
+
+  public async deleteUserById(req: Request, res: Response) {
+    const {uid} = req.params;
+    const result = await this.userService.delete(uid);
+
+    if (result > 0) {
+      HttpResponse.Ok(res, {message: "User deleted"});
+    } else {
+      throw new UserError("User not found");
+    }
+  }
+
+  public async deleteUsersOffline(_req: Request, _res: Response) {
+    const users = await this.userService.findAll();
+    const now = new Date();
+    const timeOut = new Date(now.getTime() - (2880 * 60 * 1000));
+    const usersOffline = users.filter(user => (user.lastConnection! < timeOut || user.lastConnection == null) );
+
+    if (usersOffline.length > 0) {
+      usersOffline.forEach(async (user) => {
+        transporter.sendMail(mailInactivityUser(user.email));
+      });
+      const resultDelete = await this.userService.deleteUsers(usersOffline);
+      HttpResponse.Ok(_res, resultDelete);
+    } else {
+      HttpResponse.Ok(_res, {message: "No users offline"});
     }
   }
 

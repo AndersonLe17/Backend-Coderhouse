@@ -19,8 +19,8 @@ socket.on('ioProduct', data => {
             prod.stock,
             prod.category,
            `<span class="badge rounded-pill text-bg-${(prod.status)? "success":"danger"}">${(prod.status)? "Active":"Inactive"}</span>`,
-           `<i class="fa-regular fa-pen-to-square btn btn-outline-secondary rounded-pill" data-id-edit=${prod._id}></i>`,
-           `<i class="fa-regular fa-trash btn btn-outline-danger rounded-pill" data-id-delete="${prod._id}"></i>`
+           `<i class="fa-regular fa-pen-to-square btn btn-outline-secondary rounded-pill" data-id-edit=${prod._id}></i>
+           <i class="fa-regular fa-trash btn btn-outline-danger rounded-pill" data-id-delete="${prod._id}"></i>`
         ]).draw(false);
     } else if (data.action === 'Delete') {
         const tr = document.querySelector(`[data-id-delete="${data.payload}"]`).parentElement.parentElement;
@@ -39,8 +39,8 @@ socket.on('ioProduct', data => {
             prod.stock,
             prod.category,
             `<span class="badge rounded-pill text-bg-${(prod.status)? "success":"danger"}">${(prod.status)? "Active":"Inactive"}</span>`,
-            `<i class="fa-regular fa-pen-to-square btn btn-outline-secondary rounded-pill" data-id-edit=${prod._id}></i>`,
-            `<i class="fa-regular fa-trash btn btn-outline-danger rounded-pill" data-id-delete="${prod._id}"></i>`
+            `<i class="fa-regular fa-pen-to-square btn btn-outline-secondary rounded-pill" data-id-edit=${prod._id}></i>
+            <i class="fa-regular fa-trash btn btn-outline-danger rounded-pill" data-id-delete="${prod._id}"></i>`
         ]).draw(false);
     }
 });
